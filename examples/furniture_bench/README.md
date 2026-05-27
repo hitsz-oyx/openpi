@@ -157,17 +157,59 @@ python examples/furniture_bench/compute_norm_stats_fb.py \
 
 ### 4. 开始训练
 
-**JAX 版本：**
+**完整训练命令：**
 
 ```bash
-XLA_PYTHON_CLIENT_MEM_FRACTION=0.9 python scripts/train.py pi05_fb_low --exp-name fb_finetune
+# 激活环境
+source ~/miniforge3/etc/profile.d/conda.sh
+conda activate openpi_server_eval
+
+# 设置 PYTHONPATH
+export PYTHONPATH=/home/u2023312616/test_ws/openpi/src:$PYTHONPATH
+
+# 进入项目目录
+cd /home/u2023312616/test_ws/openpi
+
+# 开始训练（测试模式，仅训练10步）
+python scripts/train.py pi05_fb_low --exp-name fb_finetune_test --num-train-steps 10 --overwrite
+
+# 正式训练（50,000步）
+# python scripts/train.py pi05_fb_low --exp-name fb_finetune --num-train-steps 50000
 ```
 
-**PyTorch 版本：**
+**关键配置说明：**
 
-```bash
-python scripts/train_pytorch.py pi05_fb_low --exp-name fb_finetune
+| 参数 | 值 | 说明 |
+|------|-----|------|
+| `action_dim` | 8 | Furniture Bench 动作维度 |
+| `action_horizon` | 16 | 动作预测序列长度 |
+| `batch_size` | 32 | 批量大小（根据显存调整） |
+| `num_train_steps` | 50000 | 训练步数 |
+
+**动作维度适配：**
+
+由于预训练模型 `pi05_base` 是基于 32 维动作训练的，而 Furniture Bench 只有 8 维动作，我们使用了自定义的 `ActionDimWeightLoader` 来自动适配权重维度：
+
+```python
+weight_loader=weight_loaders.ActionDimWeightLoader(
+    params_path="gs://openpi-assets/checkpoints/pi05_base/params",
+    target_action_dim=8,
+)
 ```
+
+**注意事项：**
+
+1. 如果遇到显存不足的问题，可以尝试：
+   - 减小 `batch_size`（在 `fb_config.py` 中修改）
+   - 使用更小的模型配置
+   - 在具有更多显存的 GPU 上运行
+
+2. 训练第一次运行时会下载约 11.6 GB 的预训练模型权重，请确保网络连接稳定
+
+3. 训练过程会自动上传日志到 Weights & Biases，确保已登录：
+   ```bash
+   wandb login
+   ```
 
 ## 数据流程
 

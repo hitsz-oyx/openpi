@@ -1,12 +1,12 @@
-# Normalization statistics
+# 归一化统计信息
 
-Following common practice, our models normalize the proprioceptive state inputs and action targets during policy training and inference. The statistics used for normalization are computed over the training data and stored alongside the model checkpoint.
+遵循常见实践，我们的模型在策略训练和推理过程中会对本体感受状态输入和动作目标进行归一化。用于归一化的统计信息是在训练数据上计算的，并与模型检查点一起存储。
 
-## Reloading normalization statistics
+## 重新加载归一化统计信息
 
-When you fine-tune one of our models on a new dataset, you need to decide whether to (A) reuse existing normalization statistics or (B) compute new statistics over your new training data. Which option is better for you depends on the similarity of your robot and task to the robot and task distribution in the pre-training dataset. Below, we list all the available pre-training normalization statistics for each model.
+当你在新的数据集上微调我们的模型时，你需要决定是 (A) 复用现有的归一化统计信息，还是 (B) 在新的训练数据上计算新的统计信息。哪种选择更适合你，取决于你的机器人和任务与预训练数据集中机器人和任务分布的相似程度。下面我们列出每个模型的所有可用预训练归一化统计信息。
 
-**If your target robot matches one of these pre-training statistics, consider reloading the same normalization statistics.** By reloading the normalization statistics, the actions in your dataset will be more "familiar" to the model, which can lead to better performance. You can reload the normalization statistics by adding an `AssetsConfig` to your training config that points to the corresponding checkpoint directory and normalization statistics ID, like below for the `Trossen` (aka ALOHA) robot statistics of the `pi0_base` checkpoint:
+**如果你的目标机器人与这些预训练统计信息之一匹配，请考虑重新加载相同的归一化统计信息。** 通过重新加载归一化统计信息，你数据集中的动作将更加"熟悉"模型，这可以带来更好的性能。你可以通过在训练配置中添加一个 `AssetsConfig` 来重新加载归一化统计信息，该配置指向相应的检查点目录和归一化统计信息 ID，以下是 `pi0_base` 检查点的 `Trossen`（又称 ALOHA）机器人统计信息的示例：
 
 ```python
 TrainConfig(
@@ -21,49 +21,49 @@ TrainConfig(
 )
 ```
 
-For an example of a full training config that reloads normalization statistics, see the `pi0_aloha_pen_uncap` config in the [training config file](https://github.com/physical-intelligence/openpi/blob/main/src/openpi/training/config.py).
+有关重新加载归一化统计信息的完整训练配置示例，请参阅[训练配置文件](https://github.com/physical-intelligence/openpi/blob/main/src/openpi/training/config.py)中的 `pi0_aloha_pen_uncap` 配置。
 
-**Note:** To successfully reload normalization statistics, it's important that your robot + dataset are following the action space definitions used in pre-training. We provide a detailed description of our action space definitions below.
+**注意：** 要成功重新加载归一化统计信息，你的机器人 + 数据集必须遵循预训练时使用的动作空间定义。我们在下面提供了动作空间定义的详细描述。
 
-**Note #2:** Whether reloading normalization statistics is beneficial depends on the similarity of your robot and task to the robot and task distribution in the pre-training dataset. We recommend to always try both, reloading and training with a fresh set of statistics computed on your new dataset (see [main README](../README.md) for instructions on how to compute new statistics), and pick the one that works better for your task.
+**注意 #2：** 重新加载归一化统计信息是否有益，取决于你的机器人和任务与预训练数据集中机器人和任务分布的相似程度。我们建议始终尝试两种方法：重新加载统计信息和使用在新数据集上计算的新统计信息进行训练（请参阅[主 README](../README.md) 获取如何计算新统计信息的说明），然后选择对你的任务效果更好的那个。
 
 
-## Provided Pre-training Normalization Statistics
+## 提供的预训练归一化统计信息
 
-Below is a list of all the pre-training normalization statistics we provide. We provide them for both, the `pi0_base` and `pi0_fast_base` models. For `pi0_base`, set the `assets_dir` to `gs://openpi-assets/checkpoints/pi0_base/assets` and for `pi0_fast_base`, set the `assets_dir` to `gs://openpi-assets/checkpoints/pi0_fast_base/assets`.
-| Robot | Description | Asset ID |
+以下是所有预训练归一化统计信息的列表。我们为 `pi0_base` 和 `pi0_fast_base` 模型都提供了这些统计信息。对于 `pi0_base`，请将 `assets_dir` 设置为 `gs://openpi-assets/checkpoints/pi0_base/assets`；对于 `pi0_fast_base`，请将 `assets_dir` 设置为 `gs://openpi-assets/checkpoints/pi0_fast_base/assets`。
+| 机器人 | 描述 | 资产 ID |
 |-------|-------------|----------|
-| ALOHA | 6-DoF dual arm robot with parallel grippers | trossen |
-| Mobile ALOHA | Mobile version of ALOHA mounted on a Slate base | trossen_mobile |
-| Franka Emika (DROID) | 7-DoF arm with parallel gripper based on the DROID setup | droid |
-| Franka Emika (non-DROID) | Franka FR3 arm with Robotiq 2F-85 gripper | franka |
-| UR5e | 6-DoF UR5e arm with Robotiq 2F-85 gripper | ur5e |
-| UR5e bi-manual | Bi-manual UR5e setup with Robotiq 2F-85 grippers | ur5e_dual |
-| ARX | Bi-manual ARX-5 robot arm setup with parallel gripper | arx |
-| ARX mobile | Mobile version of bi-manual ARX-5 robot arm setup mounted on a Slate base | arx_mobile |
-| Fibocom mobile | Fibocom mobile robot with 2x ARX-5 arms | fibocom_mobile |
+| ALOHA | 带平行夹持器的6-DoF双臂机器人 | trossen |
+| 移动 ALOHA | 安装在 Slate 底座上的移动版 ALOHA | trossen_mobile |
+| Franka Emika (DROID) | 基于 DROID 设置的带平行夹持器的7-DoF机械臂 | droid |
+| Franka Emika (非 DROID) | 配备 Robotiq 2F-85 夹持器的 Franka FR3 机械臂 | franka |
+| UR5e | 配备 Robotiq 2F-85 夹持器的6-DoF UR5e机械臂 | ur5e |
+| UR5e 双手版 | 配备 Robotiq 2F-85 夹持器的双手 UR5e 配置 | ur5e_dual |
+| ARX | 带平行夹持器的双手 ARX-5 机械臂配置 | arx |
+| ARX 移动版 | 安装在 Slate 底座上的移动版双手 ARX-5 机械臂配置 | arx_mobile |
+| Fibocom 移动版 | 配备 2x ARX-5 机械臂的 Fibocom 移动机器人 | fibocom_mobile |
 
 
-## Pi0 Model Action Space Definitions
+## Pi0 模型动作空间定义
 
-Out of the box, both the `pi0_base` and `pi0_fast_base` use the following action space definitions (left and right are defined looking from behind the robot towards the workspace):
+开箱即用，`pi0_base` 和 `pi0_fast_base` 使用以下动作空间定义（左右定义面向机器人从背后看向工作空间的方向）：
 ```
-    "dim_0:dim_5": "left arm joint angles",
-    "dim_6": "left arm gripper position",
-    "dim_7:dim_12": "right arm joint angles (for bi-manual only)",
-    "dim_13": "right arm gripper position (for bi-manual only)",
+    "dim_0:dim_5": "左臂关节角度",
+    "dim_6": "左臂夹持器位置",
+    "dim_7:dim_12": "右臂关节角度（仅用于双手配置）",
+    "dim_13": "右臂夹持器位置（仅用于双手配置）",
 
-    # For mobile robots:
-    "dim_14:dim_15": "x-y base velocity (for mobile robots only)",
+    # 对于移动机器人：
+    "dim_14:dim_15": "xy 底座速度（仅用于移动机器人）",
 ```
 
-The proprioceptive state uses the same definitions as the action space, except for the base x-y position (the last two dimensions) for mobile robots, which we don't include in the proprioceptive state.
+本体感受状态使用与动作空间相同的定义，但移动机器人的底座 xy 位置（最后两个维度）不包含在本体感受状态中。
 
-For 7-DoF robots (e.g. Franka), we use the first 7 dimensions of the action space for the joint actions, and the 8th dimension for the gripper action.
+对于 7-DoF 机器人（如 Franka），我们使用动作空间的前 7 个维度进行关节动作，第 8 个维度用于夹持器动作。
 
-General info for Pi robots:
-- Joint angles are expressed in radians, with position zero corresponding to the zero position reported by each robot's interface library, except for ALOHA, where the standard ALOHA code uses a slightly different convention (see the [ALOHA example code](../examples/aloha_real/README.md) for details).
-- Gripper positions are in [0.0, 1.0], with 0.0 corresponding to fully open and 1.0 corresponding to fully closed.
-- Control frequencies are either 20 Hz for UR5e and Franka, and 50 Hz for ARX and Trossen (ALOHA) arms.
+Pi 机器人通用信息：
+- 关节角度以弧度表示，位置零点对应于每个机器人接口库报告的零点位置，但 ALOHA 除外，标准 ALOHA 代码使用稍微不同的约定（详见 [ALOHA 示例代码](../examples/aloha_real/README.md)）。
+- 夹持器位置范围为 [0.0, 1.0]，其中 0.0 对应完全打开，1.0 对应完全闭合。
+- 控制频率为 UR5e 和 Franka 的 20 Hz，以及 ARX 和 Trossen (ALOHA) 机械臂的 50 Hz。
 
-For DROID, we use the original DROID action configuration, with joint velocity actions in the first 7 dimensions and gripper actions in the 8th dimension + a control frequency of 15 Hz.
+对于 DROID，我们使用原始的 DROID 动作配置，前 7 个维度为关节速度动作，第 8 个维度为夹持器动作，控制频率为 15 Hz。
