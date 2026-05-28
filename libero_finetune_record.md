@@ -18,3 +18,4 @@ uv run examples/libero/convert_libero_data_to_lerobot.py --data_dir /home/u20233
 或者直接从官网下载 LeRobot 数据集
 unset http_proxy https_proxy HTTP_PROXY HTTPS_PROXY 
 uv run scripts/compute_norm_stats.py --config-name pi05_libero
+会下载到~/.cache/huggingface/lerobot/physical-intelligence/libero/，并且生成归一化数据

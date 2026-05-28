@@ -969,8 +969,8 @@ _CONFIGS = [
     # RoboArena & PolaRiS configs.
     *roboarena_config.get_roboarena_configs(),
     *polaris_config.get_polaris_configs(),
-    # Furniture Bench configs.
-    fb_config.get_fb_config(),
+    # Furniture Bench configs (commented out due to missing ActionDimWeightLoader).
+    # fb_config.get_fb_config(),
 ]
 
 if len({config.name for config in _CONFIGS}) != len(_CONFIGS):
